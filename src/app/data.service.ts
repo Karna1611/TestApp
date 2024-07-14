@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { delay, map, Observable } from 'rxjs';
-import { DummyData } from './data.model'; // Assuming IDummyData is the interface for your model
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { DummyData } from './data.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,14 +10,45 @@ import { DummyData } from './data.model'; // Assuming IDummyData is the interfac
 export class DataService {
 
   private dataUrl = 'assets/data.json';
+  private data: DummyData[] = [];
 
-  constructor(private http: HttpClient) { } //angular's built in service for making HTTP requests 
+  constructor(private http: HttpClient) {
+    this.loadInitialData();
+  }
 
-  getDummyData(): Observable<DummyData[]> { //method uses HTTPClient to make a get request to fetch data from JSON
-    return this.http.get<DummyData[]>(this.dataUrl).pipe(
-      map((response: any) => response.DummyData)
-    ); //returns an Observable of type DummyData[] 
+  private loadInitialData(): void {
+    this.http.get<{ DummyData: DummyData[] }>(this.dataUrl).pipe(
+      map(response => response.DummyData)
+    ).subscribe((data) => {
+      this.data = data;
+    });
+  }
+
+  getDummyData(): Observable<DummyData[]> {
+    return of(this.data);
+  }
+
+  addEmployee(newEmployee: DummyData): Observable<void> {
+    this.data.push(newEmployee);
+    return of();
+  }
+
+  updateEmployee(updatedEmployee: DummyData): Observable<void> {
+    // Update the local data array
+    const index = this.data.findIndex(emp => emp.id === updatedEmployee.id);
+    if (index !== -1) {
+      this.data[index] = updatedEmployee;
+    }
+    // Logic to update the JSON file on the server would go here
+
+    return new Observable<void>(observer => {
+      observer.next();
+      observer.complete();
+    });
+  }
+
+  deleteEmployee(id: string): Observable<void> {
+    this.data = this.data.filter(e => e.id !== id);
+    return of();
   }
 }
-
-//purpose is to fetch data from external sources in our case, data.json file

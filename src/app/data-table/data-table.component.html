@@ -1,55 +1,11 @@
 <div class="card">
-  <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="EmployeeId">Employee ID</label>
-      <input type="text" pInputText formControlName="EmployeeId" id="EmployeeId" class="form-control" />
-      <div *ngIf="employeeForm.get('EmployeeId')?.invalid && employeeForm.get('EmployeeId')?.touched" class="text-danger">
-        Employee ID is required!
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="EmployeeName">Employee Name</label>
-      <input type="text" pInputText id="EmployeeName" formControlName="EmployeeName" class="form-control"/>
-      <div *ngIf="employeeForm.get('EmployeeName')?.invalid && employeeForm.get('EmployeeName')?.touched" class="text-danger">
-        Employee Name is required!
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="DateOfJoining">Date of Joining</label>
-      <p-calendar id="DateOfJoining" formControlName="DateOfJoining" class="form-control" dateFormat="dd/M/yy"></p-calendar>
-      <div *ngIf="employeeForm.get('DateOfJoining')?.invalid && employeeForm.get('DateOfJoining')?.touched" class="text-danger">
-        Date of joining is required!
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="DateOfBirth">Date of Birth</label>
-      <p-calendar id="DateOfBirth" formControlName="DateOfBirth" class="form-control" dateFormat="dd/M/yy"></p-calendar>
-      <div *ngIf="employeeForm.get('DateOfBirth')?.invalid && employeeForm.get('DateOfBirth')?.touched" class="text-danger">
-        Date of birth is required!
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="Salary">Salary</label>
-      <p-inputNumber  id="Salary" formControlName="Salary" class="form-control"></p-inputNumber >
-      <div *ngIf="employeeForm.get('Salary')?.invalid && employeeForm.get('Salary')?.touched" class="text-danger">
-        Salary is required!
-      </div>
-    </div>
-
-    <button type="submit" [disabled]="employeeForm.invalid" class="btn btn-primary">Add Employee</button>
-
-  </form>
-
   <p-table [value]="data" [tableStyle]="{'min-width':'50rem'}" [columns]="cols">
     <ng-template pTemplate="header" let-columns>
       <tr>
         <th *ngFor="let col of columns" [ngStyle]="{'display': col.visible !== false ? 'table-cell' : 'none'}">
           {{ col.header }}
         </th>
+        <th>Actions</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns">
@@ -58,16 +14,19 @@
           <ng-container *ngIf="!col.formatFunction">
             <!-- Use Angular DatePipe to format Date fields -->
             <span *ngIf="col.field === 'DateOfJoining' || col.field === 'DateOfBirth'">
-              {{ rowData[col.field] | date:'dd/MMM/yyyy' }}
+              {{ formatDate(rowData[col.field]) }}
             </span>
             <!-- Display other fields as-is -->
             <span *ngIf="col.field !== 'DateOfJoining' && col.field !== 'DateOfBirth'">
-              {{ rowData[col.field] }}
+              {{ col.field === 'Salary' ? formatSalary(rowData[col.field]) : rowData[col.field] }}
             </span>
           </ng-container>
           <ng-container *ngIf="col.formatFunction">
             {{ col.formatFunction(rowData[col.field]) }}
           </ng-container>
+        </td>
+        <td>
+          <button (click)="onEdit(rowData)" class="btn btn-primary">Edit</button>
         </td>
       </tr>
     </ng-template>

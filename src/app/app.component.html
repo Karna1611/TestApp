@@ -1,8 +1,16 @@
-<!-- app.component.html -->
-
-<div style="text-align:center">
-    <h1>Welcome to My Angular App!</h1>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" routerLink="/">Employee Management</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="/data-table" routerLinkActive="active">Employee List</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/add-employee">Add Employee</a>
+        </li>
+      </ul>
+    </div>
   </div>
-  
-  <app-data-table></app-data-table>
-  
+</nav>
+<router-outlet></router-outlet>
